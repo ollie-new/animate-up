@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+
+	<head>
+		<title>Animate Up and Down</title>
+		
+		<style>
+			.box {
+				cursor: pointer;
+				width: 300px;
+				float: left;
+				margin-right: 10px;
+				border: 1px solid #ccc;
+				border-radius: 5px;
+				padding: 10px;
+			}
+		</style>
+		
+	</head>
+	
+	<body>
+		
+		<h1>Header</h1>
+		
+		<div class="box">
+			<h2>Some content here</h2>
+			<p>
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus accumsan metus ac tellus iaculis et aliquam lacus accumsan. Nunc auctor sapien id tortor euismod ut consectetur sem placerat. Maecenas nisl dolor, porta ac commodo sed, molestie quis purus. Sed in dolor eget mauris tristique elementum sit amet sit amet turpis. Fusce feugiat faucibus enim, sit amet tempor diam bibendum quis. Ut tortor nisl, posuere at mattis nec, tristique non odio. Sed non metus odio.
+			</p>
+		</div>
+		
+		<div class="box">
+			<h2>Some content here</h2>
+			<p>
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus accumsan metus ac tellus iaculis et aliquam lacus accumsan. Nunc auctor sapien id tortor euismod ut consectetur sem placerat. Maecenas nisl dolor, porta ac commodo sed, molestie quis purus. Sed in dolor eget mauris tristique elementum sit amet sit amet turpis. Fusce feugiat faucibus enim, sit amet tempor diam bibendum quis. Ut tortor nisl, posuere at mattis nec, tristique non odio. Sed non metus odio.
+			</p>
+		</div>
+		
+		<div class="box">
+			<h2>Some content here</h2>
+			<p>
+			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus accumsan metus ac tellus iaculis et aliquam lacus accumsan. Nunc auctor sapien id tortor euismod ut consectetur sem placerat. Maecenas nisl dolor, porta ac commodo sed, molestie quis purus. Sed in dolor eget mauris tristique elementum sit amet sit amet turpis. Fusce feugiat faucibus enim, sit amet tempor diam bibendum quis. Ut tortor nisl, posuere at mattis nec, tristique non odio. Sed non metus odio.
+			</p>
+		</div>
+		
+		<script src="http://code.jquery.com/jquery-1.7.1.js"></script>
+
+		<script>
+			$(document).ready(function() {
+			
+				$.fn.animateUpOrDown = function(height, direction, speed, fn) {
+				
+					/*
+					custom animation for animating an element's top margin nicely on rollover
+					
+					@param str height				the value for the margin height to end up at
+					@param str direction			whether to animate up or down
+					@param int speed				number of milliseconds for the animation
+					@param fn function				the callback function to do when complete
+					*/
+				
+					var $margin_height
+					
+					//set the pixels to add or subtract from margin-top
+					(direction) === 'up' ? $margin_height = '-'+height : $margin_height = height
+	
+					$(this).animate({
+						'margin-top': $margin_height
+					}, speed, fn, function(){
+						//if we are going back down, stop any queued animations after this one has
+						//finished, i.e. if mouse is rapidly entering/leaving
+						if(direction !== 'up') {
+							$(this).stop(true);
+						}
+					});
+
+					return $(this);
+				}
+				
+				//example usage
+				$('.box').on({	
+					mouseenter: function() {
+						var $this = $(this);
+						if(!$this.data('start_margin')) {
+							$this.data('start_margin', $this.css('margin-top'));
+						}		
+						$this.animateUpOrDown('10px', 'up', 300);
+					},
+					
+					mouseleave: function() {
+						var $this = $(this),
+							$start_margin = $this.data('start_margin');
+						$this.stop();
+						$this.animateUpOrDown($this.data('start_margin'), 'down', 200);
+					}
+				});
+			});		
+		</script>
+	</body>
+	
+</html>
