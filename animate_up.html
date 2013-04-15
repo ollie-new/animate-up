@@ -47,54 +47,57 @@
 		<script>
 			$(document).ready(function() {
 			
-				$.fn.animateUpOrDown = function(height, direction, speed, fn) {
+				$.fn.animateUpOrDown = function(height, speed_up, speed_down, fn) {
 				
 					/*
 					custom animation for animating an element's top margin nicely on rollover
 					
 					@param str height				the value for the margin height to end up at
-					@param str direction			whether to animate up or down
-					@param int speed				number of milliseconds for the animation
+					@param int speed_up				number of milliseconds for the up part of the animation
+					@param int speed_down			number of milliseconds for the down part of the animation
 					@param fn function				the callback function to do when complete
 					*/
-				
-					var $margin_height
 					
-					//set the pixels to add or subtract from margin-top
-					(direction) === 'up' ? $margin_height = '-'+height : $margin_height = height
-	
-					$(this).animate({
-						'margin-top': $margin_height
-					}, speed, fn, function(){
-						//if we are going back down, stop any queued animations after this one has
-						//finished, i.e. if mouse is rapidly entering/leaving
-						if(direction !== 'up') {
-							$(this).stop(true);
+					function up_or_down(margin_height, direction, element, speed) {
+					
+						element.animate({
+							'margin-top': margin_height
+						}, speed, fn, function(){
+							//if we are going back down, stop any queued animations after this one has
+							//finished, i.e. if mouse is rapidly entering/leaving
+							if(direction !== 'up') {
+								element.stop(true);
+							}
+						});
+					}
+					
+					$(this).on({
+						mouseenter: function() {		
+							var $margin_height = '',
+								$direction = '';
+								$this = $(this)
+								
+							if(!$this.data('start_margin')) {
+								$this.data('start_margin', $this.css('margin-top'));
+							}
+							
+							$margin_height = '-'+height;
+							up_or_down($margin_height, 'up', $this, speed_up);
+						},
+					
+						mouseleave: function() {
+							var $this = $(this),
+							$start_margin = $this.data('start_margin');
+							$this.stop();
+							up_or_down($this.data('start_margin'), 'down', $this, speed_down);
 						}
 					});
-
 					return $(this);
 				}
 				
 				//example usage
-				$('.box').on({	
-					mouseenter: function() {
-						var $this = $(this);
-						if(!$this.data('start_margin')) {
-							$this.data('start_margin', $this.css('margin-top'));
-						}		
-						$this.animateUpOrDown('10px', 'up', 300);
-					},
-					
-					mouseleave: function() {
-						var $this = $(this),
-							$start_margin = $this.data('start_margin');
-						$this.stop();
-						$this.animateUpOrDown($this.data('start_margin'), 'down', 200);
-					}
-				});
-			});		
+				$('.box').animateUpOrDown('20px', 300, 200);
+			});
 		</script>
 	</body>
-	
 </html>
